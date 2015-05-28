@@ -243,3 +243,29 @@ suite 'Turbolinks.replace()', ->
       assert.notEqual @$('#temporary'), temporary # temporary nodes are cloned when found
       done()
     @Turbolinks.replace(html, change: ['div'])
+
+  test "with :title set to a value", (done) ->
+    doc = """
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <title>new title</title>
+        <meta content="new-token" name="csrf-token">
+        <script>var headScript = true</script>
+      </head>
+      <body new-attribute>
+        <div id="new-div"></div>
+        <div id="permanent" data-turbolinks-permanent>new content</div>
+        <div id="temporary" data-turbolinks-temporary>new content</div>
+        <script>window.j = window.j || 0; window.j++;</script>
+        <script data-turbolinks-eval="false">var bodyScriptEvalFalse = true</script>
+      </body>
+      </html>
+    """
+    body = @$('body')
+    permanent = @$('#permanent')
+    @document.addEventListener 'page:load', (event) =>
+      assert.equal @document.title, 'specified title'
+      done()
+    @Turbolinks.replace(doc, title: 'specified title')
